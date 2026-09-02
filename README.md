@@ -15,7 +15,7 @@ Values are resolved in order, and the first non-empty match is returned.
 ### From PyPI
 
 ```bash
-pip install config_reader
+pip install ga-config_reader
 ```
 
 ### From source
