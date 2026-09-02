@@ -29,9 +29,6 @@ classifiers = [
 ]
 dependencies = []
 
-[project.scripts]
-config_reader = "config_reader.__main__:main"
-
 [project.optional-dependencies]
 db = [
   "sqlalchemy>=2.0"
