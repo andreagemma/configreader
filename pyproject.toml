@@ -62,7 +62,7 @@ where = ["src"]
 config_reader = ["py.typed"]
 
 [tool.setuptools.dynamic]
-version = {attr = "config_reader._version.__version__"}
+version = {attr = "config_reader.__version__"}
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
