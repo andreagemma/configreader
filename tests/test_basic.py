@@ -8,6 +8,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
+import config_reader as config_reader_pkg
 from config_reader.config_reader import ConfigReader
 from config_reader.config_reader import ConfigSource
 
@@ -74,3 +75,9 @@ def test_items_iterates_ini_sections(tmp_path: Path):
 
     assert ("app", "workers", "4") in items
     assert ("app", "mode", "prod") in items
+
+
+def test_package_exposes_version():
+    assert hasattr(config_reader_pkg, "__version__")
+    assert isinstance(config_reader_pkg.__version__, str)
+    assert config_reader_pkg.__version__
