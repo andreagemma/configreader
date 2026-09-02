@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "config_reader"
 dynamic = ["version"]
-description = "Mesoscopic Traffic Assignment and Simulation Model"
+description = "Read configuration values from INI, DB, environment variables, and dictionaries"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -13,7 +13,7 @@ license-files = ["LICENSE"]
 authors = [ 
 	{ name = "Andrea Gemma", email = "andrea.gemma@uniroma3.it" } 
 ]
-keywords = ["Mesoscopic", "Traffic", "Assignment", "Simulation"]
+keywords = ["configuration", "ini", "environment", "sqlalchemy", "settings"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
@@ -33,21 +33,20 @@ dependencies = []
 config_reader = "config_reader.__main__:main"
 
 [project.optional-dependencies]
+db = [
+  "sqlalchemy>=2.0"
+]
 test = [
   "pytest>=8.0",
   "pytest-cov>=5.0"
 ]
 dev = [
   "build>=1.2",
-  "joblib>=1.4",
   "mypy>=1.10",
   "pytest>=8.0",
   "pytest-cov>=5.0",
   "ruff>=0.5",
   "twine>=5.1"
-]
-parallel = [
-  "joblib>=1.4"
 ]
 
 [project.urls]

@@ -22,6 +22,7 @@ wheel-smoke-test/
 .venv/
 venv/
 env/
+.conda/
 
 # Local editor and OS files
 .vscode/
