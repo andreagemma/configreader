@@ -3,7 +3,7 @@
 ## 1) Fallback Env -> INI
 
 ```python
-from config_reader.config_reader import ConfigReader
+from config_reader import ConfigReader
 
 reader = ConfigReader(
     file="config.ini",

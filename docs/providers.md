@@ -3,7 +3,7 @@
 Provider precedence is controlled by the providers argument:
 
 ```python
-from config_reader.config_reader import ConfigReader
+from config_reader import ConfigReader
 
 reader = ConfigReader(
     file="config.ini",

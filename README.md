@@ -43,7 +43,7 @@ pip install "config_reader[db]"
 ## Quickstart
 
 ```python
-from config_reader.config_reader import ConfigReader
+from config_reader import ConfigReader
 
 reader = ConfigReader(
     file="config.ini",
