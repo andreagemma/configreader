@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel", "build"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ga-config_reader"
+name = "ga-configreader"
 dynamic = ["version"]
 description = "Read configuration values from INI, DB, environment variables, and dictionaries"
 readme = "README.md"
@@ -47,9 +47,9 @@ dev = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/andreagemma/config_reader#readme"
-Issues = "https://github.com/andreagemma/config_reader/issues"
-Source = "https://github.com/andreagemma/config_reader"
+Documentation = "https://github.com/andreagemma/configreader#readme"
+Issues = "https://github.com/andreagemma/configreader/issues"
+Source = "https://github.com/andreagemma/configreader"
 
 
 [tool.setuptools]
@@ -59,10 +59,10 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.setuptools.package-data]
-config_reader = ["py.typed"]
+configreader = ["py.typed"]
 
 [tool.setuptools.dynamic]
-version = {attr = "config_reader.__version__"}
+version = {attr = "configreader.__version__"}
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -70,7 +70,7 @@ addopts = "-ra --strict-markers"
 
 [tool.coverage.run]
 branch = true
-source = ["config_reader"]
+source = ["configreader"]
 
 [tool.ruff]
 line-length = 120
@@ -79,7 +79,7 @@ exclude = [
   ".venv",
   "build",
   "dist",
-  "src/config_reader.egg-info",
+  "src/configreader.egg-info",
   "venv",
   "wheel-smoke-test"
 ]
@@ -89,7 +89,7 @@ select = ["E9", "F63", "F7", "F82"]
 
 [tool.mypy]
 python_version = "3.10"
-files = ["src/config_reader"]
+files = ["src/configreader"]
 warn_unused_configs = true
 check_untyped_defs = true
 follow_imports = "skip"

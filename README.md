@@ -1,4 +1,4 @@
-# config_reader
+# configreader
 
 Python library to read configuration values from multiple sources with configurable precedence.
 
@@ -15,14 +15,14 @@ Values are resolved in order, and the first non-empty match is returned.
 ### From PyPI
 
 ```bash
-pip install ga-config_reader
+pip install ga-configreader
 ```
 
 ### From source
 
 ```bash
-git clone https://github.com/andreagemma/config_reader.git
-cd config_reader
+git clone https://github.com/andreagemma/configreader.git
+cd configreader
 pip install -e .
 ```
 
@@ -37,13 +37,13 @@ pip install sqlalchemy
 Or install the project with DB extras:
 
 ```bash
-pip install "config_reader[db]"
+pip install "configreader[db]"
 ```
 
 ## Quickstart
 
 ```python
-from config_reader import ConfigReader
+from configreader import ConfigReader
 
 reader = ConfigReader(
     file="config.ini",

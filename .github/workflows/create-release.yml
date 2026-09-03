@@ -29,7 +29,7 @@ jobs:
         env:
           REQUESTED_TAG: ${{ inputs.tag }}
         run: |
-          VERSION="$(python -c "import importlib.util; spec = importlib.util.spec_from_file_location('config_reader_version', 'src/config_reader/_version.py'); module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module); print(module.__version__)")"
+          VERSION="$(python -c "import importlib.util; spec = importlib.util.spec_from_file_location('configreader_version', 'src/configreader/_version.py'); module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module); print(module.__version__)")"
           if [[ -n "$REQUESTED_TAG" ]]; then
             TAG="$REQUESTED_TAG"
           else

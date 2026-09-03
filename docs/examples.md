@@ -3,7 +3,7 @@
 ## 1) Fallback Env -> INI
 
 ```python
-from config_reader import ConfigReader
+from configreader import ConfigReader
 
 reader = ConfigReader(
     file="config.ini",
@@ -19,7 +19,7 @@ With this order, an environment variable overrides the INI value.
 ## 2) Dictionary Only (useful in tests)
 
 ```python
-from config_reader.config_reader import ConfigReader
+from configreader.configreader import ConfigReader
 
 reader = ConfigReader(
     dictionary={
@@ -42,7 +42,7 @@ weights = reader.getlist("weights", section="service", default=[1.0])
 ## 3) DB With Custom Query
 
 ```python
-from config_reader.config_reader import ConfigReader
+from configreader.configreader import ConfigReader
 
 reader = ConfigReader(
     db_url="sqlite:///settings.db",
@@ -62,7 +62,7 @@ Make sure the query returns exactly one value column.
 ## 4) Full Chain With All Providers
 
 ```python
-from config_reader.config_reader import ConfigReader
+from configreader.configreader import ConfigReader
 
 reader = ConfigReader(
     file="config.ini",

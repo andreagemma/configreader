@@ -28,7 +28,7 @@ jobs:
         run: |
           python -m venv wheel-smoke-test
           wheel-smoke-test/bin/python -m pip install dist/*.whl
-          wheel-smoke-test/bin/python -c "import config_reader; print(config_reader.__version__)"
+          wheel-smoke-test/bin/python -c "import configreader; print(configreader.__version__)"
       - uses: actions/upload-artifact@v7
         with:
           name: python-distributions
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/ga-config_reader
+      url: https://pypi.org/p/ga-configreader
     permissions:
       id-token: write
     steps:

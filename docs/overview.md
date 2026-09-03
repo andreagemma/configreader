@@ -1,6 +1,6 @@
 # Overview
 
-config_reader is a small utility library that centralizes configuration lookup across multiple sources.
+configreader is a small utility library that centralizes configuration lookup across multiple sources.
 
 Core goals:
 - automatic fallback between providers
