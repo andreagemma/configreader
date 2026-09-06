@@ -99,9 +99,11 @@ class ConfigReader:
             ImportError: If DB provider is enabled and SQLAlchemy is unavailable.
         """
         self.config = configparser.ConfigParser()
-        self.use_db = db_url is not None and (providers is None or ConfigSource.DB.value in providers)
-        self.use_ini = file is not None and (providers is None or ConfigSource.INI.value in providers)
-        self.use_env = use_env and (providers is None or ConfigSource.ENV.value in providers)
+        providers = providers or [ConfigSource.DICT, ConfigSource.ENV, ConfigSource.DB, ConfigSource.INI]
+        self.order = [p if isinstance(p, ConfigSource) else ConfigSource.parse(p) for p in providers]
+        self.use_db = db_url is not None and ConfigSource.DB in self.order
+        self.use_ini = file is not None and ConfigSource.INI in self.order
+        self.use_env = use_env and ConfigSource.ENV in self.order
 
         # File .ini
 
@@ -122,9 +124,6 @@ class ConfigReader:
         if self.use_db and self.db_url:
             self._init_db()
 
-        # Keep provider ordering explicit and stable while avoiding mutable defaults.
-        if providers is None:
-            providers = [ConfigSource.DICT, ConfigSource.ENV, ConfigSource.DB, ConfigSource.INI]
         self.order = [p if isinstance(p, ConfigSource) else ConfigSource.parse(p) for p in providers]
         self.env_default_section = env_default_section
 
@@ -161,22 +160,12 @@ class ConfigReader:
             return []
 
     def _sections_from_env(self) -> list[str]:
-        if not self.use_env:
-            return []
-        sections: set[str] = set()
-        default_section = self.env_default_section.upper()
-        default_prefix = f"{default_section}_"
-        for key in os.environ.keys():
-            up = key.upper()
-            if up.startswith(default_prefix):
-                sections.add(default_section)
-                continue
-            if "_" not in up:
-                continue
-            section, _name = up.split("_", 1)
-            if section:
-                sections.add(section)
-        return sorted(sections)
+            if not self.use_env:
+                return []
+            else:
+                return [self.env_default_section.upper()] if any(
+                    key.upper().startswith(f"{self.env_default_section.upper()}_") for key in os.environ.keys()
+                ) else []
 
     def sections(self) -> list[str]:
         """Return merged section names across enabled providers.
