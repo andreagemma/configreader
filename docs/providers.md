@@ -9,6 +9,7 @@ reader = ConfigReader(
     file="config.ini",
     db_url="sqlite:///settings.db",
     use_env=True,
+    env_default_section="APP",
     dictionary={"DEFAULT": {"timeout": "30"}},
     providers=["env", "db", "ini", "dict"],
 )
@@ -37,9 +38,9 @@ SELECT value FROM settings WHERE section = :section AND name = :name
 ## ENV
 
 - active when use_env=True
-- naming rules:
-1. if section="DEFAULT", reads NAME
-2. otherwise reads SECTION_NAME
+- names are read as SECTION_NAME
+- the default section uses env_default_section as its prefix, which defaults to "DEFAULT"
+- pass section="" to read NAME first, with env_default_section_NAME as fallback
 
 ## DICT
 

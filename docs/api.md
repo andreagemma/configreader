@@ -22,6 +22,7 @@ ConfigReader(
     db_url: str | None = None,
     db_query: str | None = None,
     use_env: bool = True,
+    env_default_section: str = "DEFAULT",
     providers: list[ConfigSource | str] | None = None,
 )
 ```
@@ -32,6 +33,7 @@ Parameters:
 - db_url: SQLAlchemy database URL.
 - db_query: SQL query using :section and :name parameters.
 - use_env: enable or disable environment variable lookup.
+- env_default_section: prefix used when reading fallback environment variables for the default section. Defaults to "DEFAULT".
 - providers: provider precedence order.
 
 ### Main Methods

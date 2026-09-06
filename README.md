@@ -48,6 +48,7 @@ from configreader import ConfigReader
 reader = ConfigReader(
     file="config.ini",
     use_env=True,
+    env_default_section="APP",
     dictionary={"DEFAULT": {"timeout": "30"}},
     providers=["env", "ini", "dict"],
 )
@@ -76,12 +77,14 @@ Meaning:
 ## Environment Variables
 
 Naming rules:
-- if section="DEFAULT", variable name is NAME
-- for custom sections, variable name is SECTION_NAME
+- environment variables are read as SECTION_NAME, using the requested section name as prefix
+- with the default section, this means DEFAULT_NAME unless you set env_default_section or pass an empty section
 
 Examples:
-- reader.get("host", section="DEFAULT") reads HOST
+- reader.get("host") reads DEFAULT_HOST
 - reader.get("host", section="app") reads APP_HOST
+- ConfigReader(env_default_section="APP").get("host") reads APP_HOST
+- reader.get("host", section="") reads HOST first, then DEFAULT_HOST
 
 ## Using INI Files
 

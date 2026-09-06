@@ -8,10 +8,12 @@ from configreader import ConfigReader
 reader = ConfigReader(
     file="config.ini",
     use_env=True,
+    env_default_section="APP",
     providers=["env", "ini"],
 )
 
 api_url = reader.get("api_url", default="http://localhost:8000")
+# reads APP_API_URL from the environment before falling back to config.ini
 ```
 
 With this order, an environment variable overrides the INI value.

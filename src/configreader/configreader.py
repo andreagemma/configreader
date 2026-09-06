@@ -79,6 +79,7 @@ class ConfigReader:
         db_url: str | None = None,
         db_query: str | None = None,
         use_env: bool = True,
+        env_default_section: str = "DEFAULT",
         providers: list[ConfigSource | str] | None = None,
     ):
         """Initialize the reader with one or more configuration providers.
@@ -89,6 +90,8 @@ class ConfigReader:
             db_url: Optional SQLAlchemy database URL.
             db_query: Optional SQL query with :section and :name bind parameters.
             use_env: Enable or disable environment variable lookup.
+            env_default_section: Section name used for environment variable prefixing (e.g. "APP" for variable names like APP_FOO). 
+                Will be used as the default section when reading environment variables.
             providers: Provider priority order. Accepts ConfigSource values or strings.
 
         Raises:
@@ -96,9 +99,11 @@ class ConfigReader:
             ImportError: If DB provider is enabled and SQLAlchemy is unavailable.
         """
         self.config = configparser.ConfigParser()
+        self.use_db = db_url is not None and (providers is None or ConfigSource.DB in providers )
+        self.use_ini = file is not None and (providers is None or ConfigSource.INI in providers)
+        self.use_env = use_env and (providers is None or ConfigSource.ENV in providers)
 
         # File .ini
-        self.use_ini = file is not None
 
         if self.use_ini:
             file_name: str = str(file)
@@ -122,8 +127,9 @@ class ConfigReader:
 
         # Keep provider ordering explicit and stable while avoiding mutable defaults.
         if providers is None:
-            providers = [ConfigSource.INI, ConfigSource.DB, ConfigSource.ENV, ConfigSource.DICT]
+            providers = [ConfigSource.DICT, ConfigSource.ENV, ConfigSource.DB, ConfigSource.INI]
         self.order = [p if isinstance(p, ConfigSource) else ConfigSource.parse(p) for p in providers]
+        self.env_default_section = env_default_section
 
     def items(self):
         """Iterate over all entries loaded from the INI provider.
@@ -166,7 +172,7 @@ class ConfigReader:
             if "_" not in up:
                 continue
             section, _name = up.split("_", 1)
-            if section:
+            if section and section.upper() == self.env_default_section.upper():
                 sections.add(section)
         return sorted(sections)
 
@@ -417,9 +423,11 @@ class ConfigReader:
         if not self.use_env:
             return None
         # DEFAULT uses NAME; custom sections use SECTION_NAME.
-        if section.upper() == "DEFAULT":
-            return os.getenv(name.upper())
-        return os.getenv(f"{section}_{name}".upper())
+        if section.upper().strip() == "":
+            value: str | None = os.getenv(name.upper(), os.getenv(f"{self.env_default_section}_{name}".upper()))
+        else:
+            value: str | None = os.getenv(f"{section}_{name}".upper())
+        return value
 
     def get(self, name: str, default: str | None = None, section: str = "DEFAULT") -> str | None:
         """Resolve a configuration value using provider priority order.
