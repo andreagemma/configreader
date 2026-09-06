@@ -90,7 +90,7 @@ class ConfigReader:
             db_url: Optional SQLAlchemy database URL.
             db_query: Optional SQL query with :section and :name bind parameters.
             use_env: Enable or disable environment variable lookup.
-            env_default_section: Section name used for environment variable prefixing (e.g. "APP" for variable names like APP_FOO). 
+            env_default_section: Section name used for environment variable prefixing (e.g. "APP" for variable names like APP_FOO).
                 Will be used as the default section when reading environment variables.
             providers: Provider priority order. Accepts ConfigSource values or strings.
 
