@@ -202,3 +202,9 @@ pytest
 ## License
 
 Distributed under the MIT License. See [LICENSE](LICENSE).
+
+Third-party dependency notices and archived license files are available in:
+
+- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
+- [licenses/third_party/summary.tsv](licenses/third_party/summary.tsv)
+- [licenses/third_party/packages/](licenses/third_party/packages)
