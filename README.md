@@ -165,6 +165,9 @@ exists = ConfigReader.check_db_exists("sqlite:///settings.db", table_name="setti
 - `getset(name, default=None, section="DEFAULT") -> set[Any] | None`
 - `gettuple(name, default=None, section="DEFAULT") -> tuple[Any, ...] | None`
 - `getdict(name, default=None, section="DEFAULT") -> dict[Any, Any] | None`
+- `sections() -> list[str]` merged section names across enabled providers
+- `variables(section) -> list[str]` merged variable names for a section across enabled providers
+- `get_sections(section) -> list[str]` backward-compatible alias for `variables(section)`
 - `items()` iterator over loaded INI entries
 
 Full details in [docs/api.md](docs/api.md).

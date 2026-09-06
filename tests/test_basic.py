@@ -77,6 +77,40 @@ def test_items_iterates_ini_sections(tmp_path: Path):
     assert ("app", "mode", "prod") in items
 
 
+def test_sections_merges_ini_dict_and_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    ini_path = tmp_path / "settings.ini"
+    ini_path.write_text("[app]\nworkers=4\n", encoding="utf-8")
+    monkeypatch.setenv("RUNTIME_TIMEOUT", "30")
+
+    reader = ConfigReader(
+        file=ini_path,
+        dictionary={"custom": {"flag": "yes"}},
+        providers=["ini", "dict", "env"],
+    )
+
+    sections = reader.sections()
+    assert "APP" in sections
+    assert "CUSTOM" in sections
+    assert "RUNTIME" in sections
+
+
+def test_variables_merges_ini_dict_and_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    ini_path = tmp_path / "settings.ini"
+    ini_path.write_text("[app]\nworkers=4\n", encoding="utf-8")
+    monkeypatch.setenv("APP_TIMEOUT", "45")
+
+    reader = ConfigReader(
+        file=ini_path,
+        dictionary={"app": {"mode": "prod"}},
+        providers=["dict", "ini", "env"],
+    )
+
+    names = reader.variables("app")
+    assert "WORKERS" in names
+    assert "MODE" in names
+    assert "TIMEOUT" in names
+
+
 def test_package_exposes_version():
     assert hasattr(configreader_pkg, "__version__")
     assert isinstance(configreader_pkg.__version__, str)

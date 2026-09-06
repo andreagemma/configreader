@@ -63,6 +63,15 @@ Parameters:
 - items()
 : iterator of (section, name, value) from loaded INI sections.
 
+- sections() -> list[str]
+: returns merged, unique section names (uppercase) across enabled providers.
+
+- variables(section: str) -> list[str]
+: returns merged, unique option names (uppercase) for a section across enabled providers.
+
+- get_sections(section: str) -> list[str]
+: backward-compatible alias of `variables(section)`.
+
 ### DB Utility Static Methods
 
 - ConfigReader.check_db_connection(db_url: str) -> bool

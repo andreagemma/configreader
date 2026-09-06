@@ -138,6 +138,130 @@ class ConfigReader:
             for name, value in self.config.items(sec):
                 yield sec, name, value
 
+    def _sections_from_ini(self) -> list[str]:
+        if not self.use_ini:
+            return []
+        return [sec.upper() for sec in self.config.sections()]
+
+    def _sections_from_dict(self) -> list[str]:
+        if not self.use_dict or not self.dictionary:
+            return []
+        return [str(sec).upper() for sec in self.dictionary.keys()]
+
+    def _sections_from_db(self) -> list[str]:
+        if not self.use_db or not self.db_session or text is None:
+            return []
+        try:
+            rows = self.db_session.execute(text("SELECT DISTINCT section FROM settings")).all()
+            return [str(row[0]).upper() for row in rows if row and row[0] is not None]
+        except SQLAlchemyError:
+            return []
+
+    def _sections_from_env(self) -> list[str]:
+        if not self.use_env:
+            return []
+        sections: set[str] = set()
+        for key in os.environ.keys():
+            up = key.upper()
+            if "_" not in up:
+                continue
+            section, _name = up.split("_", 1)
+            if section:
+                sections.add(section)
+        return sorted(sections)
+
+    def sections(self) -> list[str]:
+        """Return merged section names across enabled providers.
+
+        Returns:
+            Sorted list of unique section names (uppercase).
+        """
+        merged: set[str] = set()
+        for provider in self.order:
+            if provider == ConfigSource.INI:
+                merged.update(self._sections_from_ini())
+            elif provider == ConfigSource.DB:
+                merged.update(self._sections_from_db())
+            elif provider == ConfigSource.ENV:
+                merged.update(self._sections_from_env())
+            elif provider == ConfigSource.DICT:
+                merged.update(self._sections_from_dict())
+        return sorted(merged)
+
+    def _names_from_ini(self, section: str) -> list[str]:
+        if not self.use_ini:
+            return []
+        sec = section.upper()
+        if sec == "DEFAULT":
+            return [name.upper() for name in self.config.defaults().keys()]
+        if not self.config.has_section(section) and not self.config.has_section(sec):
+            return []
+        target = section if self.config.has_section(section) else sec
+        return [name.upper() for name in self.config.options(target)]
+
+    def _names_from_dict(self, section: str) -> list[str]:
+        if not self.use_dict or not self.dictionary:
+            return []
+        sec = section.upper()
+        for key, values in self.dictionary.items():
+            if str(key).upper() == sec:
+                return [str(name).upper() for name in values.keys()]
+        return []
+
+    def _names_from_db(self, section: str) -> list[str]:
+        if not self.use_db or not self.db_session or text is None:
+            return []
+        try:
+            rows = self.db_session.execute(
+                text("SELECT DISTINCT name FROM settings WHERE section = :section"),
+                {"section": section},
+            ).all()
+            if not rows and section != section.upper():
+                rows = self.db_session.execute(
+                    text("SELECT DISTINCT name FROM settings WHERE section = :section"),
+                    {"section": section.upper()},
+                ).all()
+            return [str(row[0]).upper() for row in rows if row and row[0] is not None]
+        except SQLAlchemyError:
+            return []
+
+    def _names_from_env(self, section: str) -> list[str]:
+        if not self.use_env:
+            return []
+        sec = section.upper()
+        names: set[str] = set()
+        prefix = f"{sec}_"
+        for key in os.environ.keys():
+            up = key.upper()
+            if up.startswith(prefix):
+                names.add(up[len(prefix) :])
+        return sorted(names)
+
+    def variables(self, section: str) -> list[str]:
+        """Return merged option names for one section across providers.
+
+        Args:
+            section: Section name.
+
+        Returns:
+            Sorted list of unique variable names (uppercase).
+        """
+        merged: set[str] = set()
+        for provider in self.order:
+            if provider == ConfigSource.INI:
+                merged.update(self._names_from_ini(section))
+            elif provider == ConfigSource.DB:
+                merged.update(self._names_from_db(section))
+            elif provider == ConfigSource.ENV:
+                merged.update(self._names_from_env(section))
+            elif provider == ConfigSource.DICT:
+                merged.update(self._names_from_dict(section))
+        return sorted(merged)
+
+    def get_sections(self, section: str) -> list[str]:
+        """Backward-compatible alias for variables(section)."""
+        return self.variables(section)
+
     def _init_db(self):
         """Create and store a SQLAlchemy session for DB lookups.
 
