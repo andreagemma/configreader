@@ -99,9 +99,9 @@ class ConfigReader:
             ImportError: If DB provider is enabled and SQLAlchemy is unavailable.
         """
         self.config = configparser.ConfigParser()
-        self.use_db = db_url is not None and (providers is None or ConfigSource.DB in providers )
-        self.use_ini = file is not None and (providers is None or ConfigSource.INI in providers)
-        self.use_env = use_env and (providers is None or ConfigSource.ENV in providers)
+        self.use_db = db_url is not None and (providers is None or ConfigSource.DB.value in providers)
+        self.use_ini = file is not None and (providers is None or ConfigSource.INI.value in providers)
+        self.use_env = use_env and (providers is None or ConfigSource.ENV.value in providers)
 
         # File .ini
 
@@ -112,12 +112,9 @@ class ConfigReader:
             else:
                 raise FileNotFoundError(f"INI file '{file_name}' does not exist")
 
-        self.use_db = db_url is not None
         self.db_url = db_url
         self.db_query = db_query or "SELECT value FROM settings WHERE section = :section AND name = :name"
         self.db_session = None
-
-        self.use_env = use_env
 
         self.use_dict = dictionary is not None
         self.dictionary = dictionary
@@ -167,12 +164,17 @@ class ConfigReader:
         if not self.use_env:
             return []
         sections: set[str] = set()
+        default_section = self.env_default_section.upper()
+        default_prefix = f"{default_section}_"
         for key in os.environ.keys():
             up = key.upper()
+            if up.startswith(default_prefix):
+                sections.add(default_section)
+                continue
             if "_" not in up:
                 continue
             section, _name = up.split("_", 1)
-            if section and section.upper() == self.env_default_section.upper():
+            if section:
                 sections.add(section)
         return sorted(sections)
 
@@ -407,7 +409,8 @@ class ConfigReader:
         """Read a value from environment variables.
 
         Naming convention:
-            - DEFAULT section: NAME
+            - DEFAULT section: ENV_DEFAULT_SECTION_NAME
+            - Empty section: NAME, then ENV_DEFAULT_SECTION_NAME
             - Custom section: SECTION_NAME
 
         Args:
@@ -422,12 +425,13 @@ class ConfigReader:
         """
         if not self.use_env:
             return None
-        # DEFAULT uses NAME; custom sections use SECTION_NAME.
-        if section.upper().strip() == "":
-            value: str | None = os.getenv(name.upper(), os.getenv(f"{self.env_default_section}_{name}".upper()))
-        else:
-            value: str | None = os.getenv(f"{section}_{name}".upper())
-        return value
+        section_name = section.strip()
+        default_key = f"{self.env_default_section}_{name}".upper()
+        if section_name == "":
+            return os.getenv(name.upper(), os.getenv(default_key))
+        if section_name.upper() == "DEFAULT":
+            return os.getenv(default_key)
+        return os.getenv(f"{section}_{name}".upper())
 
     def get(self, name: str, default: str | None = None, section: str = "DEFAULT") -> str | None:
         """Resolve a configuration value using provider priority order.

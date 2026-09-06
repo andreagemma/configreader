@@ -41,18 +41,19 @@ def test_get_from_dict_and_typed_accessors():
 
 
 def test_provider_priority_env_over_dict(monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setenv("HOST", "env-host")
+    monkeypatch.setenv("AIMSIM_314_HOST", "env-host")
     reader = ConfigReader(
         dictionary={"DEFAULT": {"host": "dict-host"}},
+        env_default_section="aimsim_314",
         providers=["env", "dict"],
     )
     assert reader.get("host") == "env-host"
 
 
 def test_env_section_naming(monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setenv("APP_TIMEOUT", "45")
-    reader = ConfigReader(use_env=True, providers=["env"])
-    assert reader.getint("timeout", section="app") == 45
+    monkeypatch.setenv("AIMSIM_314_TIMEOUT", "45")
+    reader = ConfigReader(use_env=True, env_default_section="aimsim_314", providers=["env"])
+    assert reader.getint("timeout") == 45
 
 
 def test_default_returned_when_missing():
@@ -80,32 +81,34 @@ def test_items_iterates_ini_sections(tmp_path: Path):
 def test_sections_merges_ini_dict_and_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     ini_path = tmp_path / "settings.ini"
     ini_path.write_text("[app]\nworkers=4\n", encoding="utf-8")
-    monkeypatch.setenv("RUNTIME_TIMEOUT", "30")
+    monkeypatch.setenv("AIMSIM_314_TIMEOUT", "30")
 
     reader = ConfigReader(
         file=ini_path,
         dictionary={"custom": {"flag": "yes"}},
+        env_default_section="aimsim_314",
         providers=["ini", "dict", "env"],
     )
 
     sections = reader.sections()
     assert "APP" in sections
     assert "CUSTOM" in sections
-    assert "RUNTIME" in sections
+    assert "AIMSIM_314" in sections
 
 
 def test_variables_merges_ini_dict_and_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     ini_path = tmp_path / "settings.ini"
-    ini_path.write_text("[app]\nworkers=4\n", encoding="utf-8")
-    monkeypatch.setenv("APP_TIMEOUT", "45")
+    ini_path.write_text("[aimsim_314]\nworkers=4\n", encoding="utf-8")
+    monkeypatch.setenv("AIMSIM_314_TIMEOUT", "45")
 
     reader = ConfigReader(
         file=ini_path,
-        dictionary={"app": {"mode": "prod"}},
+        dictionary={"aimsim_314": {"mode": "prod"}},
+        env_default_section="aimsim_314",
         providers=["dict", "ini", "env"],
     )
 
-    names = reader.variables("app")
+    names = reader.variables("aimsim_314")
     assert "WORKERS" in names
     assert "MODE" in names
     assert "TIMEOUT" in names
