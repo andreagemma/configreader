@@ -48,6 +48,19 @@ Based on dependencies declared in pyproject.toml:
 - Keep THIRD_PARTY_NOTICES.md updated.
 - Ensure MANIFEST.in includes these artifacts.
 
+## Quality And Fix Workflow
+
+- Always run commands in the current active environment.
+- If the user asks for a quality verification, run in this order:
+  - `ruff check .`
+  - `ruff format --check .`
+  - `mypy`
+- If the user asks for a fix, apply corrective edits and then run quality checks.
+- If the user asks only for formatting, run only:
+  - `ruff format .`
+- Otherwise, prefer fixing issues reported by `ruff check` and `mypy` without changing runtime functionality.
+- After changes, verify with tests (`pytest -q`, or focused pytest selection when appropriate).
+
 ## Safety
 
 - Do not run destructive git history operations.
