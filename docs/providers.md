@@ -12,6 +12,7 @@ reader = ConfigReader(
     env_default_section="APP",
     dictionary={"DEFAULT": {"timeout": "30"}},
     providers=["env", "db", "ini", "dict"],
+    cached=True,
 )
 ```
 
@@ -52,3 +53,10 @@ SELECT value FROM settings WHERE section = :section AND name = :name
 ```
 
 Non-string values are internally converted to strings.
+
+## Cache
+
+- `cached=True` (default) builds startup cache for enabled providers.
+- `get`, `items`, `sections`, and `variables` read from cache when enabled.
+- Use `refresh(on_cache_exists="warining")` to reload providers and rebuild cache.
+- Use `cache(on_cache_exists="warining")` to build cache on demand when initialized with `cached=False`.

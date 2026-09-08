@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.0 - 2026-09-08
+
+- Added `cached: bool = True` to `ConfigReader` constructor.
+- Added startup cache build for enabled providers and cache-based reads in:
+	- `get(...)`
+	- `items()`
+	- `sections()`
+	- `variables(section)`
+- Added `refresh(on_cache_exists=...)` to reload providers and rebuild cache.
+- Added `cache(on_cache_exists=...)` to build cache on demand.
+- Updated `copy(...)` to support `copy_cache: bool = False` and cache copy on demand.
+- Added `on_cache_exists` policy (`"ignore" | "raise" | "warning"`) to `refresh`, `cache`, and `copy(copy_cache=True)` when cache is missing.
+- Removed `get_sections(section)` alias.
+
 ## 0.1.5 - 2026-09-06
 
 - Added third-party compliance artifacts derived from dependencies declared in `pyproject.toml`:

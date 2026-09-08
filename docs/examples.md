@@ -10,6 +10,7 @@ reader = ConfigReader(
     use_env=True,
     env_default_section="APP",
     providers=["env", "ini"],
+    cached=True,
 )
 
 api_url = reader.get("api_url", default="http://localhost:8000")
@@ -82,3 +83,24 @@ Practical order:
 2. central configuration from DB
 3. local fallback from INI
 4. final hard-coded fallback from dictionary
+
+## 5) Build Cache On Demand
+
+```python
+from configreader import ConfigReader
+
+reader = ConfigReader(
+    dictionary={"DEFAULT": {"mode": "dev"}},
+    providers=["dict"],
+    cached=False,
+)
+
+# emits RuntimeWarning by default because cache is missing, then creates cache
+reader.cache()
+
+clone = reader.copy(copy_cache=True)
+assert clone.get("mode") == "dev"
+
+# re-read providers and rebuild cache
+reader.refresh()
+```

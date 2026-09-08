@@ -114,6 +114,55 @@ def test_variables_merges_ini_dict_and_env(monkeypatch: pytest.MonkeyPatch, tmp_
     assert "TIMEOUT" in names
 
 
+def test_cached_dictionary_snapshot_and_refresh():
+    source = {"DEFAULT": {"host": "one"}}
+    reader = ConfigReader(dictionary=source, providers=["dict"], cached=True) # pyright: ignore[reportArgumentType]
+
+    source["DEFAULT"]["host"] = "two"
+    assert reader.get("host") == "one"
+
+    reader.refresh()
+    assert reader.get("host") == "two"
+
+
+def test_non_cached_dictionary_reads_live_value():
+    source = {"DEFAULT": {"host": "one"}}
+    reader = ConfigReader(dictionary=source, providers=["dict"], cached=False) # pyright: ignore[reportArgumentType]
+
+    source["DEFAULT"]["host"] = "two"
+    assert reader.get("host") == "two"
+
+
+def test_cache_method_creates_cache_when_missing_with_warning():
+    source = {"DEFAULT": {"host": "one"}}
+    reader = ConfigReader(dictionary=source, providers=["dict"], cached=False) # pyright: ignore[reportArgumentType]
+
+    with pytest.warns(RuntimeWarning, match="Cache does not exist"):
+        reader.cache()
+
+    source["DEFAULT"]["host"] = "two"
+    assert reader.get("host") == "one"
+
+
+def test_refresh_raises_when_cache_missing_and_raise_mode():
+    source = {"DEFAULT": {"host": "one"}}
+    reader = ConfigReader(dictionary=source, providers=["dict"], cached=False) # pyright: ignore[reportArgumentType]
+
+    with pytest.raises(RuntimeError, match="Cache does not exist"):
+        reader.refresh(on_cache_exists="raise")
+
+
+def test_copy_cache_true_copies_source_cache_snapshot():
+    source = {"DEFAULT": {"host": "one"}}
+    reader = ConfigReader(dictionary=source, providers=["dict"], cached=True) # pyright: ignore[reportArgumentType]
+
+    source["DEFAULT"]["host"] = "two"
+    clone = reader.copy(copy_cache=True)
+
+    assert clone.get("host") == "one"
+
+
+
 def test_package_exposes_version():
     assert hasattr(configreader_pkg, "__version__")
     assert isinstance(configreader_pkg.__version__, str)

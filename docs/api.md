@@ -24,6 +24,7 @@ ConfigReader(
     use_env: bool = True,
     env_default_section: str = "DEFAULT",
     providers: list[ConfigSource | str] | None = None,
+    cached: bool = True,
 )
 ```
 
@@ -35,6 +36,7 @@ Parameters:
 - use_env: enable or disable environment variable lookup.
 - env_default_section: prefix used when reading fallback environment variables for the default section. Defaults to "DEFAULT".
 - providers: provider precedence order.
+- cached: when True, builds startup cache and reads `get/items/sections/variables` from cache.
 
 ### Main Methods
 
@@ -71,8 +73,14 @@ Parameters:
 - variables(section: str) -> list[str]
 : returns merged, unique option names (uppercase) for a section across enabled providers.
 
-- get_sections(section: str) -> list[str]
-: backward-compatible alias of `variables(section)`.
+- refresh(on_cache_exists: str = "warining") -> None
+: reloads providers and rebuilds cache.
+
+- cache(on_cache_exists: str = "warining") -> None
+: creates cache dictionaries on demand.
+
+- copy(copy_cache: bool = False, on_cache_exists: str = "warining") -> ConfigReader
+: clones the reader; cache copy is optional and on demand.
 
 ### DB Utility Static Methods
 
@@ -82,5 +90,7 @@ Parameters:
 ## Important Behavior
 
 - If no provider returns a value, default is returned.
+- With `cached=True`, values are read from startup cache until `refresh()` or `cache()` is called.
 - Typed conversions may raise parsing/conversion exceptions.
 - Without SQLAlchemy, DB methods are unavailable.
+- `on_cache_exists` supports `"ignore"`, `"raise"`, `"warning"`. The default literal is `"warining"`, normalized to `"warning"`.

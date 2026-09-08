@@ -51,6 +51,7 @@ reader = ConfigReader(
     env_default_section="APP",
     dictionary={"DEFAULT": {"timeout": "30"}},
     providers=["env", "ini", "dict"],
+    cached=True,
 )
 
 host = reader.get("host", default="127.0.0.1")
@@ -170,8 +171,22 @@ exists = ConfigReader.check_db_exists("sqlite:///settings.db", table_name="setti
 - `getdict(name, default=None, section="DEFAULT") -> dict[Any, Any] | None`
 - `sections() -> list[str]` merged section names across enabled providers
 - `variables(section) -> list[str]` merged variable names for a section across enabled providers
-- `get_sections(section) -> list[str]` backward-compatible alias for `variables(section)`
 - `items()` iterator over loaded INI entries
+- `refresh(on_cache_exists="warining") -> None` reload providers and rebuild cache
+- `cache(on_cache_exists="warining") -> None` build cache on demand
+- `copy(copy_cache=False, on_cache_exists="warining") -> ConfigReader`
+
+## Cache Behavior
+
+- By default `cached=True`, so values are snapshotted at initialization for enabled providers.
+- With cache enabled, `get`, `items`, `sections`, and `variables` read from cache.
+- Call `refresh()` to reload providers and rebuild cache.
+- Use `cache()` to create cache on demand when `cached=False`.
+- For `refresh`, `cache`, and `copy(copy_cache=True)`, `on_cache_exists` controls behavior when cache is missing:
+    - `"ignore"`: no warning or error
+    - `"warning"`: emit `RuntimeWarning` (default)
+    - `"raise"`: raise `RuntimeError`
+- The default is `"warining"` for backward compatibility and is normalized to `"warning"`.
 
 Full details in [docs/api.md](docs/api.md).
 

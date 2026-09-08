@@ -16,10 +16,11 @@ Core goals:
 
 ## Resolution Flow
 
-1. a get* method is called
-2. providers are checked in the configured order
-3. the first non-None value is returned
+1. the reader optionally builds provider caches at initialization (`cached=True` by default)
+2. a `get*`, `items`, `sections`, or `variables` call reads from cache
+3. providers are evaluated in configured order inside cache-backed resolution
 4. if no value is found, default is returned
+5. call `refresh()` to reload providers and rebuild cache
 
 ## When To Use
 
