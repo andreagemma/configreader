@@ -1,8 +1,13 @@
 name: Create Release (whl)
+run-name: Create Release whl - ${{ github.event.inputs.commit_name || github.ref_name }}
 
 on:
   workflow_dispatch:
     inputs:
+      commit_name:
+        description: Commit name shown in run title
+        required: false
+        type: string
       version:
         description: "Release/tag (optional). If empty use the package version"
         required: false

@@ -1,8 +1,13 @@
 name: Build and publish
+run-name: Build and publish - ${{ github.event.inputs.commit_name || github.ref_name }}
 
 on:
   workflow_dispatch:
     inputs:
+      commit_name:
+        description: Commit name shown in run title
+        required: false
+        type: string
       publish:
         description: Publish the built distributions to PyPI
         required: true
