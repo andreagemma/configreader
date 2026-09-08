@@ -1,5 +1,5 @@
-name: All
-run-name: All - ${{ inputs.commit_name || github.ref_name }}
+name: Check, Test and Release WHL
+run-name: Check, Test and Release WHL - ${{ inputs.commit_name || github.ref_name }}
 
 on:
   workflow_dispatch:
