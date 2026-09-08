@@ -332,7 +332,7 @@ class ConfigReader:
             Sorted list of unique section names (uppercase).
         """
         merged: set[str] = set()
-        if self.cached:            
+        if self.cached:
             for provider in self.order:
                 if provider in {ConfigSource.INI, ConfigSource.DB, ConfigSource.DICT}:
                     merged.update(self._cache_values.get(provider, {}).keys())
