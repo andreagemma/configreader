@@ -17,11 +17,6 @@ on:
         description: Overwrite existing release/tag in create-release-whl
         required: true
         type: boolean
-        default: false
-      publish:
-        description: Publish built distributions to PyPI in release step
-        required: true
-        type: boolean
         default: true
 
 permissions:
