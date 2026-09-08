@@ -1,4 +1,4 @@
-name: Release WHL
+name: Create Release (whl)
 
 on:
   workflow_dispatch:
