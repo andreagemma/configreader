@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.2 - 2026-09-08
+ - Release Dummy
+## 0.2.1 - 2026-09-08
+ - Release Dummy
 ## 0.2.0 - 2026-09-08
 
 - Added `cached: bool = True` to `ConfigReader` constructor.
