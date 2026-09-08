@@ -1,7 +1,13 @@
 name: CI
-run-name: CI - ${{ github.event.inputs.commit_name || github.ref_name }}
+run-name: CI - ${{ inputs.commit_name || github.ref_name }}
 
 on:
+  workflow_call:
+    inputs:
+      commit_name:
+        description: Commit name shown in run title
+        required: false
+        type: string
   workflow_dispatch:
     inputs:
       commit_name:

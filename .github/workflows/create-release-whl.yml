@@ -1,7 +1,23 @@
 name: Create Release (whl)
-run-name: Create Release whl - ${{ github.event.inputs.commit_name || github.ref_name }}
+run-name: Create Release whl - ${{ inputs.commit_name || github.ref_name }}
 
 on:
+  workflow_call:
+    inputs:
+      commit_name:
+        description: Commit name shown in run title
+        required: false
+        type: string
+      version:
+        description: Release/tag (optional). If empty use the package version
+        required: false
+        type: string
+        default: ""
+      overwrite_existing:
+        description: Overwrite existing release/tag
+        required: true
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       commit_name:
@@ -70,7 +86,7 @@ jobs:
           print(f"Resolved tag: {tag} (source: {source})")
           PY
         env:
-          INPUT_VERSION: ${{ github.event.inputs.version }}
+          INPUT_VERSION: ${{ inputs.version }}
 
       - name: Check existing release/tag
         id: check_release
@@ -78,7 +94,7 @@ jobs:
         with:
           script: |
             const tag = `${{ steps.vars.outputs.tag }}`;
-            const overwrite = `${{ github.event.inputs.overwrite_existing }}` === 'true';
+            const overwrite = `${{ inputs.overwrite_existing }}` === 'true';
 
             let exists = false;
             let releaseId = null;
@@ -157,5 +173,5 @@ jobs:
             echo "- Tag: ${{ steps.vars.outputs.tag }}"
             echo "- Version source: ${{ steps.vars.outputs.version_source }}"
             echo "- Existing release found: ${{ steps.check_release.outputs.exists || 'false' }}"
-            echo "- overwrite_existing: ${{ github.event.inputs.overwrite_existing }}"
+            echo "- overwrite_existing: ${{ inputs.overwrite_existing }}"
           } >> "$GITHUB_STEP_SUMMARY"
