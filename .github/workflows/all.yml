@@ -42,7 +42,7 @@ jobs:
 
   create_release_whl:
     needs: ci
-    uses: ./.github/workflows/create_release_whl.yml
+    uses: ./.github/workflows/create-release-whl.yml
     with:
       commit_name: ${{ inputs.commit_name }}
       version: ${{ inputs.version }}
